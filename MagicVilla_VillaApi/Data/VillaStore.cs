@@ -6,8 +6,8 @@ namespace MagicVilla_VillaApi.Data
     {
         public static List<VillaDTO> VillasList=new List<VillaDTO>
                         {
-                            new VillaDTO{Id = 1,Name = "Test1"},
-                            new VillaDTO { Id = 2, Name = "Test2"}
+                            new VillaDTO{Id = 1,Name = "Test1",Occupancy=1,Sqft=300},
+                            new VillaDTO { Id = 2, Name = "Test2",Occupancy=3,Sqft=400}
                         };
     }
 }
