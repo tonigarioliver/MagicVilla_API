@@ -36,7 +36,7 @@ namespace MagicVilla_VillaApi.Controllers
             return Ok(await _context.Villas.ToListAsync());
         }
 
-        [HttpGet("{id:int}",Name = "GetVillaById")]
+        [HttpGet("GetVillaById{id:int}",Name = "GetVillaById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,7 +60,6 @@ namespace MagicVilla_VillaApi.Controllers
 
         public async Task<ActionResult<VillaDTO>> AddVilaAsync([FromBody] VillaCreateDTO createDTO)
         {
-            //if(!ModelState.IsValid) { return BadRequest(ModelState); }
             if (await _context.Villas.FirstOrDefaultAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
             {
                 ModelState.AddModelError("ErrorMessages", "Villa already Exists!");
@@ -72,6 +71,7 @@ namespace MagicVilla_VillaApi.Controllers
                 return BadRequest(createDTO);
             }
             var _mappedVilla = _mapper.Map<Villa>(createDTO);
+            if(!TryValidateModel(_mappedVilla)) { return BadRequest(ModelState); }
             _mappedVilla.CreateDate = DateTime.Now;
             _context.Villas.Add(_mappedVilla);
             await _context.SaveChangesAsync();
@@ -146,9 +146,12 @@ namespace MagicVilla_VillaApi.Controllers
                 return NotFound();
             }
             var villa = await _context.Villas.AsTracking().FirstOrDefaultAsync(villa => villa.Id == Id);
-            var _mappedVilla = _mapper.Map<Villa>(villaPatch);
-            _mappedVilla.UpdateDate = DateTime.Now;
-            _context.Villas.Update(_mappedVilla);
+            VillaUpdateDTO villaDTO = _mapper.Map<VillaUpdateDTO>(villa);
+            villaPatch.ApplyTo(villaDTO, ModelState);
+            Villa model = _mapper.Map<Villa>(villaDTO);
+            model.UpdateDate = DateTime.Now;
+            //_mappedVilla.ApplyTo(villa, ModelState);
+            _context.Villas.Update(model);
             await _context.SaveChangesAsync();
             return NoContent();
         }
