@@ -10,11 +10,11 @@ namespace MagicVilla_VillaApi.Data
         private readonly ILogger _logger;
         public VillaRepository Villas { get; private set; }
 
-        public UnitOfWork(AppDbContext appDbContext,ILogger logger)
+        public UnitOfWork(AppDbContext appDbContext,ILoggerFactory logger)
         {
             _appDbContext = appDbContext;
-            _logger = logger;
-            Villas = new VillaRepository(appDbContext,logger);
+            _logger = logger.CreateLogger("Logs");
+            Villas = new VillaRepository(appDbContext,_logger);
         }
 
 
