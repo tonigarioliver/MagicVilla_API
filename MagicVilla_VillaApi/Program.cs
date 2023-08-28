@@ -1,3 +1,4 @@
+using MagicVilla_VillaApi.Core.IConfiguration;
 using MagicVilla_VillaApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers().AddNewtonsoftJson(); 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

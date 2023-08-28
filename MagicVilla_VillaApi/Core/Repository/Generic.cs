@@ -23,14 +23,28 @@ namespace MagicVilla_VillaApi.Core.Repository
 
         public async Task<T> CreateAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
-            return entity;
+            try
+            {
+                await _dbSet.AddAsync(entity);
+                return entity;
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Adding entity", entity);
+                return null;
+            }
         }
 
         public async Task<bool> Delete(T entity)
         {
-            _dbSet.Remove(entity);
-            return true;
+            try
+            {
+                _dbSet.Remove(entity);
+                return true;
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error Removing entity", entity);
+                return false;
+            }
         }
 
         public async Task<IList> GetAllAsync(Expression<Func<T, bool>>? filter = null, bool tracked = true)
@@ -61,10 +75,17 @@ namespace MagicVilla_VillaApi.Core.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<bool> Update(T entity)
+        public async Task<T> Update(T entity)
         {
-            _dbSet.Update(entity);
-            return true;
+            try
+            {
+                _dbSet.Update(entity);
+                return entity;
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Updating entity", entity);
+                return null;
+            }
         }
     }
 }
