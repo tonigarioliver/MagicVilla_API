@@ -81,25 +81,25 @@ namespace MagicVilla_VillaApi.Controllers
             var result = _mapper.Map<VillaDTO>(_mappedVilla);
             return CreatedAtRoute("GetVillaById",new {Id= _mappedVilla.Id}, result);
         }
-
-        [HttpDelete("{id:int}",Name ="DeleteVillaById")]
+        
+        [HttpDelete("{id:int}", Name = "DeleteVilla")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<IActionResult> DeleteVillaById(int Id)
+        public async Task<IActionResult> DeleteVilla(int id)
         {            
-            if (await _UnitOfWork.Villas.GetAsync(villa => villa.Id ==Id) is null)
+            if ((await _UnitOfWork.Villas.GetAsync(villa => villa.Id ==id,false)) is null)
             {
                 return NotFound();
             }
            
-            if (Id.Equals(0))
+            if (id.Equals(0))
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            var villa = await _UnitOfWork.Villas.GetAsync(villa => villa.Id == Id);
+            var villa = await _UnitOfWork.Villas.GetAsync(villa => villa.Id == id);
             await _UnitOfWork.Villas.Delete(villa);
             await _UnitOfWork.CompleteAsyn();
             return NoContent();
@@ -152,18 +152,18 @@ namespace MagicVilla_VillaApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<IActionResult> UpdatePartialVila(int Id, JsonPatchDocument<VillaUpdateDTO> villaPatch)
+        public async Task<IActionResult> UpdatePartialVila(int id, JsonPatchDocument<VillaUpdateDTO> villaPatch)
         {
-            if (villaPatch == null || Id == 0)
+            if (villaPatch == null || id == 0)
             {
                 return BadRequest();
             }
 
-            if (await _UnitOfWork.Villas.GetAsync(villa => villa.Id == Id) is null)
+            if (await _UnitOfWork.Villas.GetAsync(villa => villa.Id == id) is null)
             {
                 return NotFound();
             }
-            var villa = await _UnitOfWork.Villas.GetAsync(villa => villa.Id == Id, false);
+            var villa = await _UnitOfWork.Villas.GetAsync(villa => villa.Id == id, false);
             VillaUpdateDTO villaDTO = _mapper.Map<VillaUpdateDTO>(villa);
             villaPatch.ApplyTo(villaDTO, ModelState);
             Villa model = _mapper.Map<Villa>(villaDTO);
