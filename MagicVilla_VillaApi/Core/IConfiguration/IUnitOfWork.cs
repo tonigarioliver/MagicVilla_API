@@ -6,6 +6,7 @@ namespace MagicVilla_VillaApi.Core.IConfiguration
     public interface IUnitOfWork
     {
         public VillaRepository Villas { get; }
+        public ILogger<IUnitOfWork> logger { get; }
         Task CompleteAsyn();
     }
 }

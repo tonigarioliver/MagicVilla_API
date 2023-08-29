@@ -7,14 +7,15 @@ namespace MagicVilla_VillaApi.Data
     public class UnitOfWork : IUnitOfWork,IDisposable
     {
         private readonly AppDbContext _appDbContext;
-        private readonly ILogger _logger;
         public VillaRepository Villas { get; private set; }
 
-        public UnitOfWork(AppDbContext appDbContext,ILoggerFactory logger)
+        public ILogger<IUnitOfWork> logger { get; private set; }
+
+        public UnitOfWork(AppDbContext appDbContext,ILogger<IUnitOfWork> logger)
         {
             _appDbContext = appDbContext;
-            _logger = logger.CreateLogger("Logs");
-            Villas = new VillaRepository(appDbContext,_logger);
+            this.logger = logger;
+            Villas = new VillaRepository(appDbContext,logger);
         }
 
 

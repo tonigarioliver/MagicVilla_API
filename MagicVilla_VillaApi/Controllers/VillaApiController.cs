@@ -18,23 +18,21 @@ namespace MagicVilla_VillaApi.Controllers
     [ApiController]
     public class VillaApiController : ControllerBase
     {
-        private readonly ILogger<VillaApiController> _logger;
         private readonly IUnitOfWork _UnitOfWork;
         private readonly IMapper _mapper;
 
-        public VillaApiController(ILogger<VillaApiController>logger, IUnitOfWork UnitOfWork, IMapper mapper)
+        public VillaApiController(IUnitOfWork UnitOfWork, IMapper mapper)
         {
-            _logger = logger;
             _UnitOfWork = UnitOfWork;
             _mapper = mapper;
-
         }
+
         [HttpGet]
         [Route("GetAllVillas")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<VillaDTO>>> GetAllAsync()
         {
-            _logger.LogInformation("Get Villas");
+            _UnitOfWork.logger.LogInformation("Get Villas");
             return Ok(await _UnitOfWork.Villas.GetAllAsync());
         }
 
@@ -47,7 +45,7 @@ namespace MagicVilla_VillaApi.Controllers
         {
             if(id == 0) 
             {
-                _logger.LogError("Get Villa error with id" + id);
+                _UnitOfWork.logger.LogError("Get Villa error with id" + id);
                 return BadRequest(); 
             }
             var villa=await _UnitOfWork.Villas.GetAsync(x => x.Id == id);
@@ -110,24 +108,6 @@ namespace MagicVilla_VillaApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public async Task<IActionResult> UpdateVilla(int Id, VillaUpdateDTO villaDTO)
-        //{
-        //if(villaDTO == null || villaDTO.Id!=Id)
-        //{
-        //    return BadRequest();
-        //}
-
-        //if (await _UnitOfWork.Villas.GetAsync(villa => villa.Id == Id) is null)
-        //{
-        //    return NotFound();
-        //}
-        //var villa = await _UnitOfWork.Villas.GetAsync(villa => villa.Id == Id,false);
-        //var _mappedVilla = _mapper.Map<Villa>(villaDTO);
-        //_mappedVilla.UpdateDate = DateTime.Now;
-        //await _UnitOfWork.Villas.Update(_mappedVilla);
-        //await _UnitOfWork.CompleteAsyn();
-        //return NoContent();
-        //}
         public async Task<IActionResult> UpdateVilla(int id, [FromBody] VillaUpdateDTO updateDTO)
         {
             if (updateDTO == null || id != updateDTO.Id)
